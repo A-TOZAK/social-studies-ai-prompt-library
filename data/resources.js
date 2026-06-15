@@ -15,8 +15,8 @@ window.RESOURCES = [
   {
     type: "note",
     title: "研修記事",
-    description: "既存の研修サイトで案内していた鹿児島小社研向けの記事リンクです。",
-    url: "https://note.com/tozaki_edu/n/nc1a5b3e1f881"
+    description: "今回の鹿児島小社研向け記事リンクです。",
+    url: "https://note.com/tozaki_edu/n/n664d3a76011d?app_launch=false"
   },
   {
     type: "公開教材",
@@ -27,13 +27,13 @@ window.RESOURCES = [
   {
     type: "公開教材",
     title: "社会ことば辞典",
-    description: "社会科のつまずきやすい言葉を集めて育てる教材サイトです。",
+    description: "社会科の学習に支援が必要な子に向けた、社会科の言葉辞典です。",
     url: "https://a-tozak.github.io/shakai-kotoba-jiten/"
   },
   {
-    type: "研修中",
-    title: "社会科×生成AIのはてな WebApp",
-    description: "研修中の疑問や気づきを集めるための入口です。",
+    type: "公開教材 β",
+    title: "社会科×生成AI 実践事例リンク集",
+    description: "Geminiアイディアソン投稿作品。生成AIやICTを活用した実践事例、使えるプロンプト、これまでの実践を基にまとめたサイトです。",
     url: "https://script.google.com/macros/s/AKfycbx58AycZ0-RQp3YSHdVTZPBac6K-AwZE6rnAFNGyNUnIajaP1aClX6f_hp33_tQs8tl/exec"
   },
   {

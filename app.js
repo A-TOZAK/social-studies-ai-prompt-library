@@ -107,6 +107,14 @@
     return Boolean(state.likes[id]);
   }
 
+  function formatPromptMeta(prompt) {
+    const category = labels[prompt.category] || "";
+    if (!prompt.phase) return category;
+    return prompt.phase === category || prompt.phase.indexOf(`${category} /`) === 0
+      ? prompt.phase
+      : `${category} / ${prompt.phase}`;
+  }
+
   function likedCount() {
     return prompts.filter(function (prompt) {
       return isLiked(prompt.id);
@@ -123,7 +131,6 @@
         prompt.summary,
         prompt.benefit,
         prompt.phase,
-        prompt.source,
         prompt.tags.join(" "),
         prompt.body
       ].join(" "));
@@ -155,7 +162,6 @@
           <div class="tag-list">${prompt.tags.map(function (tag) {
             return `<span>${escapeHtml(tag)}</span>`;
           }).join("")}</div>
-          <p class="source">出典: ${escapeHtml(prompt.source)}</p>
           <div class="card-actions">
             <button type="button" data-copy="${escapeHtml(prompt.id)}">コピー</button>
             <button type="button" data-edit="${escapeHtml(prompt.id)}">${edited ? "編集版" : "編集"}</button>
@@ -183,7 +189,7 @@
     if (!prompt) return;
     state.currentId = id;
     dialogTitle.textContent = prompt.title;
-    dialogMeta.textContent = `${labels[prompt.category]} / ${prompt.phase} / ${prompt.source}`;
+    dialogMeta.textContent = formatPromptMeta(prompt);
     dialogBenefit.textContent = prompt.benefit;
     promptEditor.value = getPromptText(prompt);
     customizeList.innerHTML = prompt.customize.map(function (item) {
@@ -210,7 +216,7 @@
     }
 
     const text = liked.map(function (prompt, index) {
-      return `${index + 1}. ${prompt.title}（${labels[prompt.category]} / ${prompt.phase}）`;
+      return `${index + 1}. ${prompt.title}（${formatPromptMeta(prompt)}）`;
     }).join("\n");
     copyText(text, "いいね一覧をコピーしました");
   }
