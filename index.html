@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="小学校社会科の授業準備、地域素材の教材化、生成AIによる問い返し、対話活動、自己調整学習を支えるプロンプト集です。">
+    <meta name="theme-color" content="#245f6b">
+    <title>小学校社会科AIプロンプト集 | LiFE with</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#promptGrid">プロンプト一覧へ</a>
+
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="ページ先頭へ">
+        <span class="brand-mark">L</span>
+        <span>
+          <strong>LiFE with</strong>
+          <small>社会科AIプロンプト集</small>
+        </span>
+      </a>
+      <nav class="topnav" aria-label="主要ナビゲーション">
+        <a href="#prompts">プロンプト</a>
+        <a href="#flow">設計の軸</a>
+        <a href="#links">リンク</a>
+        <a href="#survey">アンケート</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="library-shell" id="prompts" aria-labelledby="pageTitle">
+        <div class="library-head">
+          <div class="title-block">
+            <p class="kicker">鹿児島小社研 研修おみやげ</p>
+            <h1 id="pageTitle">小学校社会科AIプロンプト集</h1>
+            <p class="lead">
+              地域素材の教材化、問い返し、個別フィードバック、対話活動、振り返り分析まで。
+              社会科の授業づくりに合わせて、そのまま使える形で整理しました。
+            </p>
+          </div>
+          <div class="slide-cluster" aria-label="研修スライドのプレビュー">
+            <img class="slide-main" src="assets/slides/slide-19.png" alt="授業準備における生成AI活用の一覧">
+            <img class="slide-sub" src="assets/slides/slide-24.png" alt="研修スライドの一部">
+          </div>
+        </div>
+
+        <div class="resource-strip" aria-label="研修リンク">
+          <a href="assets/docs/kagoshima-social-ai-workshop.pdf" target="_blank" rel="noopener">
+            <span>PDF</span>
+            <strong>研修スライド</strong>
+          </a>
+          <a href="https://note.com/tozaki_edu" target="_blank" rel="noopener">
+            <span>note</span>
+            <strong>Tozaki note</strong>
+          </a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSd-lXEyDQKFLjC3BntdDVM34FQZeUlgVTwWFIVuADohss1G_Q/viewform?usp=header" target="_blank" rel="noopener">
+            <span>Form</span>
+            <strong>研修後アンケート</strong>
+          </a>
+          <a href="https://line.me/R/ti/p/@bkb6975y?ts=09011113&amp;oat_content=url" target="_blank" rel="noopener">
+            <span>LINE</span>
+            <strong>公式LINE</strong>
+          </a>
+        </div>
+
+        <div class="control-panel" aria-label="プロンプト検索と絞り込み">
+          <div class="search-box" role="search">
+            <label for="promptSearch">検索</label>
+            <input id="promptSearch" type="search" autocomplete="off" placeholder="例: 地域素材 / 時代背景 / ふきだしくん / 自己調整">
+          </div>
+          <div class="filter-row" id="categoryFilters" aria-label="カテゴリ">
+            <button type="button" class="filter-chip is-active" data-category="all" aria-pressed="true">すべて</button>
+            <button type="button" class="filter-chip" data-category="inquiry" aria-pressed="false">問い</button>
+            <button type="button" class="filter-chip" data-category="prep" aria-pressed="false">授業準備</button>
+            <button type="button" class="filter-chip" data-category="feedback" aria-pressed="false">見取り・FB</button>
+            <button type="button" class="filter-chip" data-category="dialogue" aria-pressed="false">対話</button>
+            <button type="button" class="filter-chip" data-category="self" aria-pressed="false">自己調整</button>
+            <button type="button" class="filter-chip" data-category="student" aria-pressed="false">児童用</button>
+            <button type="button" class="filter-chip" data-category="share" aria-pressed="false">共有</button>
+          </div>
+        </div>
+
+        <div class="library-status">
+          <p id="promptCount" aria-live="polite">読み込み中</p>
+          <div class="status-actions">
+            <button class="small-button" type="button" id="showLikedOnly" aria-pressed="false">いいねのみ</button>
+            <button class="small-button" type="button" id="copyLiked">いいね一覧をコピー</button>
+          </div>
+        </div>
+
+        <div class="prompt-grid" id="promptGrid"></div>
+      </section>
+
+      <section class="band flow-band" id="flow" aria-labelledby="flowTitle">
+        <div class="section-inner">
+          <div class="section-head">
+            <p class="kicker">Design</p>
+            <h2 id="flowTitle">社会科で外さない5つの軸</h2>
+            <p>生成AIを「答えを出す道具」にせず、問い・資料・見取り・対話・再構成を支える道具として置きます。</p>
+          </div>
+          <div class="axis-grid">
+            <article>
+              <span>01</span>
+              <h3>問いが先</h3>
+              <p>社会的事象を単に調べるのではなく、時代背景や地域の願いと結び付けて考える問いを先に設計する。</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>資料で確かめる</h3>
+              <p>AIの出力は当たりをつけるために使い、公式資料・地図・年表・写真・聞き取りで必ず確かめる。</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>評価ではなく問い返し</h3>
+              <p>児童の記述を点数化して終わらせず、根拠・因果・立場・時代背景へ戻す問い返しを増やす。</p>
+            </article>
+            <article>
+              <span>04</span>
+              <h3>対話で広げる</h3>
+              <p>個別フィードバックで整えた考えを、グループ対話、全体交流、個の再考察へつなぐ。</p>
+            </article>
+            <article>
+              <span>05</span>
+              <h3>選べる子にする</h3>
+              <p>紙もデジタルもAIも、目的に合わせて選べる状態へ。学習ログは支援に必要な最小限で残す。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="band links-band" id="links" aria-labelledby="linksTitle">
+        <div class="section-inner">
+          <div class="section-head">
+            <p class="kicker">Links</p>
+            <h2 id="linksTitle">実践・教材リンク</h2>
+            <p>研修資料、note、公開教材、研修後の入口をまとめています。</p>
+          </div>
+          <div class="link-list" id="resourceList"></div>
+        </div>
+      </section>
+
+      <section class="survey-band" id="survey" aria-labelledby="surveyTitle">
+        <div class="survey-panel">
+          <div>
+            <p class="kicker">Feedback</p>
+            <h2 id="surveyTitle">よかったプロンプトを教えてください</h2>
+            <p>
+              いいね一覧をコピーしてアンケートに貼ると、次の研修やプロンプト改善に生かしやすくなります。
+              先生方の実践に合わせて、社会科専用の道具箱として育てていきます。
+            </p>
+          </div>
+          <div class="survey-actions">
+            <button class="button" type="button" id="copyLikedBottom">いいね一覧をコピー</button>
+            <a class="button primary" href="https://docs.google.com/forms/d/e/1FAIpQLSd-lXEyDQKFLjC3BntdDVM34FQZeUlgVTwWFIVuADohss1G_Q/viewform?usp=header" target="_blank" rel="noopener">アンケートへ</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="prompt-dialog" id="promptDialog" aria-labelledby="dialogTitle">
+      <form method="dialog" class="dialog-shell">
+        <div class="dialog-head">
+          <div>
+            <p class="dialog-meta" id="dialogMeta"></p>
+            <h2 id="dialogTitle"></h2>
+          </div>
+          <button class="icon-button" value="close" aria-label="閉じる">×</button>
+        </div>
+        <p id="dialogBenefit" class="dialog-benefit"></p>
+        <textarea id="promptEditor" spellcheck="false"></textarea>
+        <div class="customize-panel">
+          <h3>書き換えポイント</h3>
+          <ul id="customizeList"></ul>
+        </div>
+        <div class="dialog-actions">
+          <button class="button" type="button" id="resetPrompt">元に戻す</button>
+          <button class="button" type="button" id="saveDraft">この端末に保存</button>
+          <button class="button primary" type="button" id="copyEdited">編集版をコピー</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="data/prompts.js"></script>
+    <script src="data/resources.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
