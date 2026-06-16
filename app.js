@@ -41,9 +41,12 @@
   const customizeList = document.getElementById("customizeList");
   const resourceList = document.getElementById("resourceList");
   const likedToggle = document.getElementById("showLikedOnly");
-  const validationSummary = document.getElementById("validationSummary");
-  const validationGrid = document.getElementById("validationGrid");
-  const dialogValidation = document.getElementById("dialogValidation");
+  const exampleDialog = document.getElementById("exampleDialog");
+  const exampleTitle = document.getElementById("exampleTitle");
+  const exampleMeta = document.getElementById("exampleMeta");
+  const exampleSummary = document.getElementById("exampleSummary");
+  const exampleOutput = document.getElementById("exampleOutput");
+  const copyExample = document.getElementById("copyExample");
 
   function readStore(key) {
     try {
@@ -71,11 +74,6 @@
     return String(value || "").normalize("NFKC").toLowerCase();
   }
 
-  function truncate(value, length) {
-    const text = String(value || "").trim();
-    return text.length > length ? `${text.slice(0, length)}...` : text;
-  }
-
   function getValidation(id) {
     return state.validations[id] || validationNotes[id] || null;
   }
@@ -91,6 +89,33 @@
     if (!validation) return "";
     const label = validation.verdict || "検証済み";
     return `<span class="validation-badge ${verdictClass(label)}">Gemini ${escapeHtml(label)}</span>`;
+  }
+
+  function requestJson(url) {
+    if (typeof window.fetch === "function") {
+      return window.fetch(url, { cache: "no-store" }).then(function (response) {
+        if (!response.ok) throw new Error("request failed");
+        return response.json();
+      });
+    }
+
+    return new Promise(function (resolve, reject) {
+      const request = new XMLHttpRequest();
+      request.open("GET", url, true);
+      request.onreadystatechange = function () {
+        if (request.readyState !== 4) return;
+        if (request.status >= 200 && request.status < 300) {
+          try {
+            resolve(JSON.parse(request.responseText));
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          reject(new Error("request failed"));
+        }
+      };
+      request.send();
+    });
   }
 
   function showToast(message) {
@@ -187,18 +212,13 @@
           <h3>${escapeHtml(prompt.title)}</h3>
           <p class="summary">${escapeHtml(prompt.summary)}</p>
           <p class="benefit"><span>メリット</span>${escapeHtml(prompt.benefit)}</p>
-          ${validation ? `
-            <div class="validation-mini">
-              ${validationBadge(validation)}
-              <p>${escapeHtml(validation.summary || "Gemini Flashで実機検証済みです。")}</p>
-            </div>
-          ` : ""}
           <div class="tag-list">${prompt.tags.map(function (tag) {
             return `<span>${escapeHtml(tag)}</span>`;
           }).join("")}</div>
           <div class="card-actions">
             <button type="button" data-copy="${escapeHtml(prompt.id)}">コピー</button>
             <button type="button" data-edit="${escapeHtml(prompt.id)}">${edited ? "編集版" : "編集"}</button>
+            <button type="button" data-example="${escapeHtml(prompt.id)}" ${validation ? "" : "disabled"}>出力例</button>
             <button type="button" class="like-button" data-like="${escapeHtml(prompt.id)}" aria-pressed="${liked ? "true" : "false"}">${liked ? "いいね済" : "いいね"}</button>
           </div>
         </article>
@@ -221,7 +241,6 @@
   function openEditor(id) {
     const prompt = findPrompt(id);
     if (!prompt) return;
-    const validation = getValidation(id);
     state.currentId = id;
     dialogTitle.textContent = prompt.title;
     dialogMeta.textContent = formatPromptMeta(prompt);
@@ -230,7 +249,6 @@
     customizeList.innerHTML = prompt.customize.map(function (item) {
       return `<li>${escapeHtml(item)}</li>`;
     }).join("");
-    renderDialogValidation(validation);
 
     if (typeof dialog.showModal === "function") {
       dialog.showModal();
@@ -257,111 +275,38 @@
     copyText(text, "いいね一覧をコピーしました");
   }
 
-  function renderDialogValidation(validation) {
-    if (!dialogValidation || !validation) {
-      if (dialogValidation) {
-        dialogValidation.hidden = true;
-        dialogValidation.innerHTML = "";
-      }
-      return;
-    }
+  function openExample(id) {
+    const prompt = findPrompt(id);
+    const validation = getValidation(id);
+    if (!prompt || !validation || !exampleDialog) return;
 
-    dialogValidation.hidden = false;
-    dialogValidation.innerHTML = `
-      <h3>Gemini検証メモ</h3>
+    state.currentId = id;
+    exampleTitle.textContent = `${prompt.title} の出力例`;
+    exampleMeta.textContent = `${formatPromptMeta(prompt)} / Gemini Flash`;
+    exampleSummary.innerHTML = `
       <div class="validation-detail-head">
         ${validationBadge(validation)}
         ${validation.answerChars ? `<span>${escapeHtml(validation.answerChars)}字</span>` : ""}
       </div>
-      <dl>
-        <div><dt>出力概要</dt><dd>${escapeHtml(validation.summary || "")}</dd></div>
-        <div><dt>良かった点</dt><dd>${escapeHtml(validation.strength || "")}</dd></div>
-        <div><dt>注意点</dt><dd>${escapeHtml(validation.concern || "")}</dd></div>
-        <div><dt>反映方針</dt><dd>${escapeHtml(validation.revision || "")}</dd></div>
-      </dl>
-      ${validation.answerPreview ? `
-        <details>
-          <summary>Gemini出力プレビュー</summary>
-          <pre>${escapeHtml(truncate(validation.answerPreview, 1200))}</pre>
-        </details>
-      ` : ""}
+      <p>${escapeHtml(validation.summary || "Gemini Flashで実際に返ってきた出力例です。")}</p>
+      ${validation.concern ? `<p><strong>見るときのポイント:</strong> ${escapeHtml(validation.concern)}</p>` : ""}
     `;
+    exampleOutput.textContent = validation.answer || validation.answerPreview || "出力例を読み込み中です。少し待ってからもう一度開いてください。";
+
+    if (typeof exampleDialog.showModal === "function") {
+      exampleDialog.showModal();
+    } else {
+      exampleDialog.setAttribute("open", "");
+    }
   }
 
-  function renderValidationSection() {
-    if (!validationSummary || !validationGrid) return;
-
-    const validations = prompts.map(function (prompt) {
-      return {
-        prompt: prompt,
-        validation: getValidation(prompt.id)
-      };
-    }).filter(function (item) {
-      return item.validation;
-    });
-
-    if (!validations.length) {
-      validationSummary.innerHTML = "<p>検証結果を読み込み中です。</p>";
-      validationGrid.innerHTML = "";
+  function copyCurrentExample() {
+    const validation = getValidation(state.currentId);
+    if (!validation) {
+      showToast("出力例がまだ読み込まれていません");
       return;
     }
-
-    const counts = validations.reduce(function (memo, item) {
-      const verdict = item.validation.verdict || "検証済み";
-      memo[verdict] = (memo[verdict] || 0) + 1;
-      return memo;
-    }, {});
-    const rawCount = validations.filter(function (item) {
-      return item.validation.answerPreview;
-    }).length;
-    const averageChars = Math.round(validations.reduce(function (sum, item) {
-      return sum + (Number(item.validation.answerChars) || 0);
-    }, 0) / Math.max(rawCount, 1));
-
-    validationSummary.innerHTML = `
-      <article>
-        <strong>${validations.length}本</strong>
-        <span>プロンプト検証済み</span>
-      </article>
-      <article>
-        <strong>${counts["良好"] || 0}本</strong>
-        <span>そのまま使いやすい</span>
-      </article>
-      <article>
-        <strong>${(counts["軽微修正"] || 0) + (counts["要修正"] || 0)}本</strong>
-        <span>条件追加が有効</span>
-      </article>
-      <article>
-        <strong>${averageChars.toLocaleString()}字</strong>
-        <span>平均出力量の目安</span>
-      </article>
-    `;
-
-    validationGrid.innerHTML = validations.map(function (item) {
-      const prompt = item.prompt;
-      const validation = item.validation;
-      return `
-        <article class="validation-card">
-          <div class="validation-card-head">
-            ${validationBadge(validation)}
-            <span>${escapeHtml(formatPromptMeta(prompt))}</span>
-          </div>
-          <h3>${escapeHtml(prompt.title)}</h3>
-          <p>${escapeHtml(validation.summary || "")}</p>
-          <dl>
-            <div><dt>良かった点</dt><dd>${escapeHtml(validation.strength || "")}</dd></div>
-            <div><dt>注意点</dt><dd>${escapeHtml(validation.concern || "")}</dd></div>
-            <div><dt>反映方針</dt><dd>${escapeHtml(validation.revision || "")}</dd></div>
-          </dl>
-          ${validation.answerPreview ? `
-            <details>
-              <summary>出力プレビューを見る${validation.answerChars ? `（${escapeHtml(validation.answerChars)}字）` : ""}</summary>
-              <pre>${escapeHtml(truncate(validation.answerPreview, 900))}</pre>
-            </details>
-          ` : ""}
-        </article>
-      `;
-    }).join("");
+    copyText(validation.answer || validation.answerPreview || "", "出力例をコピーしました");
   }
 
   async function loadValidationResults() {
@@ -369,12 +314,9 @@
       state.validations[id] = validationNotes[id];
     });
     renderPrompts();
-    renderValidationSection();
 
     try {
-      const response = await fetch("docs/gemini-flash-validation-raw-results.json", { cache: "no-store" });
-      if (!response.ok) throw new Error("validation fetch failed");
-      const raw = await response.json();
+      const raw = await requestJson("docs/gemini-flash-validation-raw-results.json");
       if (!Array.isArray(raw)) return;
 
       raw.forEach(function (item) {
@@ -383,14 +325,13 @@
           index: item.index,
           status: item.status,
           answerChars: item.answerChars,
-          answerPreview: item.answerPreview
+          answerPreview: item.answerPreview,
+          answer: item.answer
         });
       });
       renderPrompts();
-      renderValidationSection();
     } catch (error) {
       renderPrompts();
-      renderValidationSection();
     }
   }
 
@@ -415,6 +356,7 @@
   grid.addEventListener("click", function (event) {
     const copyButton = event.target.closest("[data-copy]");
     const editButton = event.target.closest("[data-edit]");
+    const exampleButton = event.target.closest("[data-example]");
     const likeButton = event.target.closest("[data-like]");
 
     if (copyButton) {
@@ -424,6 +366,10 @@
 
     if (editButton) {
       openEditor(editButton.dataset.edit);
+    }
+
+    if (exampleButton) {
+      openExample(exampleButton.dataset.example);
     }
 
     if (likeButton) {
@@ -483,8 +429,17 @@
     if (event.target === dialog) dialog.close();
   });
 
+  if (exampleDialog) {
+    exampleDialog.addEventListener("click", function (event) {
+      if (event.target === exampleDialog) exampleDialog.close();
+    });
+  }
+
+  if (copyExample) {
+    copyExample.addEventListener("click", copyCurrentExample);
+  }
+
   renderResources();
   renderPrompts();
-  renderValidationSection();
   loadValidationResults();
 })();

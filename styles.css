@@ -429,21 +429,6 @@ h1 {
   font-weight: 900;
 }
 
-.validation-mini {
-  margin: 0 0 12px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fbfcfc;
-}
-
-.validation-mini p {
-  margin: 7px 0 0;
-  color: var(--ink-soft);
-  font-size: .82rem;
-  line-height: 1.55;
-}
-
 .validation-badge {
   display: inline-flex;
   align-items: center;
@@ -497,7 +482,7 @@ h1 {
 
 .card-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -516,6 +501,11 @@ h1 {
 .icon-button:focus-visible {
   border-color: var(--teal);
   outline: none;
+}
+
+.prompt-card button:disabled {
+  cursor: not-allowed;
+  opacity: .54;
 }
 
 .like-button[aria-pressed="true"] {
@@ -544,10 +534,6 @@ h1 {
 
 .links-band {
   background: var(--surface-soft);
-}
-
-.validation-band {
-  background: #fff;
 }
 
 .section-inner {
@@ -602,52 +588,6 @@ h1 {
   font-size: .9rem;
 }
 
-.validation-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.validation-summary article,
-.validation-summary p {
-  min-width: 0;
-  margin: 0;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface-soft);
-}
-
-.validation-summary strong {
-  display: block;
-  font-size: 1.55rem;
-  line-height: 1.2;
-}
-
-.validation-summary span {
-  display: block;
-  margin-top: 4px;
-  color: var(--ink-soft);
-  font-size: .86rem;
-  font-weight: 800;
-}
-
-.validation-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.validation-card {
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fbfcfc;
-}
-
-.validation-card-head,
 .validation-detail-head {
   display: flex;
   flex-wrap: wrap;
@@ -655,85 +595,10 @@ h1 {
   gap: 8px;
 }
 
-.validation-card-head span:not(.validation-badge),
 .validation-detail-head span:not(.validation-badge) {
   color: var(--muted);
   font-size: .78rem;
   font-weight: 800;
-}
-
-.validation-card h3 {
-  margin: 10px 0 8px;
-  font-size: 1.08rem;
-  line-height: 1.4;
-}
-
-.validation-card p {
-  margin: 0 0 12px;
-  color: var(--ink-soft);
-  font-size: .92rem;
-}
-
-.validation-card dl,
-.validation-panel dl {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-}
-
-.validation-card dl div,
-.validation-panel dl div {
-  min-width: 0;
-}
-
-.validation-card dt,
-.validation-panel dt {
-  color: var(--teal);
-  font-size: .74rem;
-  font-weight: 900;
-}
-
-.validation-card dd,
-.validation-panel dd {
-  margin: 2px 0 0;
-  color: var(--ink-soft);
-  font-size: .88rem;
-}
-
-.validation-card details,
-.validation-panel details {
-  margin-top: 12px;
-}
-
-.validation-card summary,
-.validation-panel summary {
-  cursor: pointer;
-  color: var(--teal);
-  font-size: .86rem;
-  font-weight: 900;
-}
-
-.validation-card pre,
-.validation-panel pre {
-  max-height: 260px;
-  overflow: auto;
-  margin: 10px 0 0;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--ink-soft);
-  white-space: pre-wrap;
-  font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
-  font-size: .84rem;
-  line-height: 1.65;
-}
-
-.validation-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
 }
 
 .link-list {
@@ -1011,16 +876,38 @@ h1 {
   font-weight: 700;
 }
 
-.validation-panel {
+.example-summary {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--teal-soft);
+}
+
+.example-summary p {
+  margin: 0;
+  color: var(--teal-dark);
+  font-size: .92rem;
+}
+
+.example-summary strong {
+  font-weight: 900;
+}
+
+.example-output {
+  max-height: min(58dvh, 560px);
+  overflow: auto;
+  margin: 0;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fbfcfc;
-}
-
-.validation-panel h3 {
-  margin: 0 0 8px;
-  font-size: .95rem;
+  color: var(--ink);
+  white-space: pre-wrap;
+  font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+  font-size: .94rem;
+  line-height: 1.72;
 }
 
 .dialog-actions {
@@ -1062,10 +949,6 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .validation-summary,
-  .validation-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 820px) {
@@ -1121,9 +1004,7 @@ h1 {
 
   .prompt-grid,
   .axis-grid,
-  .resource-strip,
-  .validation-summary,
-  .validation-grid {
+  .resource-strip {
     grid-template-columns: 1fr;
   }
 

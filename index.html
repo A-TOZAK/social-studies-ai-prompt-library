@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260615-feedback">
+    <link rel="stylesheet" href="styles.css?v=20260616-output-example">
   </head>
   <body>
     <a class="skip-link" href="#promptGrid">プロンプト一覧へ</a>
@@ -26,7 +26,6 @@
       </a>
       <nav class="topnav" aria-label="主要ナビゲーション">
         <a href="#prompts">プロンプト</a>
-        <a href="#validation">検証結果</a>
         <a href="#flow">設計の軸</a>
         <a href="#links">リンク</a>
         <a href="#survey">アンケート</a>
@@ -94,27 +93,6 @@
         </div>
 
         <div class="prompt-grid" id="promptGrid"></div>
-      </section>
-
-      <section class="band validation-band" id="validation" aria-labelledby="validationTitle">
-        <div class="section-inner">
-          <div class="section-head">
-            <p class="kicker">Gemini Flash Validation</p>
-            <h2 id="validationTitle">Geminiで返ってきた出力の見え方</h2>
-            <p>
-              24本のプロンプトを、鹿児島・桜島の架空条件でGemini Flashに順番に投入しました。
-              実際の返答傾向、使えそうな点、修正しておきたい点をプロンプトごとに確認できます。
-            </p>
-          </div>
-          <div class="validation-summary" id="validationSummary" aria-live="polite">
-            <p>検証結果を読み込み中です。</p>
-          </div>
-          <div class="validation-grid" id="validationGrid"></div>
-          <div class="validation-links">
-            <a class="button" href="docs/gemini-flash-validation-log.md" target="_blank" rel="noopener">検証ログを開く</a>
-            <a class="button" href="docs/gemini-flash-validation-raw-results.json" target="_blank" rel="noopener">raw JSONを開く</a>
-          </div>
-        </div>
       </section>
 
       <section class="band flow-band" id="flow" aria-labelledby="flowTitle">
@@ -217,7 +195,6 @@
           <h3>書き換えポイント</h3>
           <ul id="customizeList"></ul>
         </div>
-        <div class="validation-panel" id="dialogValidation" hidden></div>
         <div class="dialog-actions">
           <button class="button" type="button" id="resetPrompt">元に戻す</button>
           <button class="button" type="button" id="saveDraft">この端末に保存</button>
@@ -226,11 +203,28 @@
       </form>
     </dialog>
 
+    <dialog class="prompt-dialog" id="exampleDialog" aria-labelledby="exampleTitle">
+      <form method="dialog" class="dialog-shell">
+        <div class="dialog-head">
+          <div>
+            <p class="dialog-meta" id="exampleMeta"></p>
+            <h2 id="exampleTitle"></h2>
+          </div>
+          <button class="icon-button" value="close" aria-label="閉じる">×</button>
+        </div>
+        <div class="example-summary" id="exampleSummary"></div>
+        <pre class="example-output" id="exampleOutput"></pre>
+        <div class="dialog-actions">
+          <button class="button primary" type="button" id="copyExample">出力例をコピー</button>
+        </div>
+      </form>
+    </dialog>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="data/prompts.js"></script>
     <script src="data/resources.js"></script>
-    <script src="data/results.js?v=20260616-results"></script>
-    <script src="app.js"></script>
+    <script src="data/results.js?v=20260616-output-example"></script>
+    <script src="app.js?v=20260616-output-example"></script>
   </body>
 </html>
