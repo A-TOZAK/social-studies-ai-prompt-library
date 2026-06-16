@@ -25,6 +25,13 @@ window.RESOURCES = [
     url: "https://a-tozak.github.io/ai-prompt-library/"
   },
   {
+    type: "検証ログ",
+    title: "Gemini Flash 実機検証ログ",
+    description: "24本のプロンプトをGemini Flashへ投入した結果、出力傾向、改善候補を確認できます。",
+    url: "docs/gemini-flash-validation-log.md",
+    local: true
+  },
+  {
     type: "公開教材",
     title: "社会ことば辞典",
     description: "社会科の学習に支援が必要な子に向けた、社会科の言葉辞典です。",

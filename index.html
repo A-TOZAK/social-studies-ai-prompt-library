@@ -26,6 +26,7 @@
       </a>
       <nav class="topnav" aria-label="主要ナビゲーション">
         <a href="#prompts">プロンプト</a>
+        <a href="#validation">検証結果</a>
         <a href="#flow">設計の軸</a>
         <a href="#links">リンク</a>
         <a href="#survey">アンケート</a>
@@ -93,6 +94,27 @@
         </div>
 
         <div class="prompt-grid" id="promptGrid"></div>
+      </section>
+
+      <section class="band validation-band" id="validation" aria-labelledby="validationTitle">
+        <div class="section-inner">
+          <div class="section-head">
+            <p class="kicker">Gemini Flash Validation</p>
+            <h2 id="validationTitle">Geminiで返ってきた出力の見え方</h2>
+            <p>
+              24本のプロンプトを、鹿児島・桜島の架空条件でGemini Flashに順番に投入しました。
+              実際の返答傾向、使えそうな点、修正しておきたい点をプロンプトごとに確認できます。
+            </p>
+          </div>
+          <div class="validation-summary" id="validationSummary" aria-live="polite">
+            <p>検証結果を読み込み中です。</p>
+          </div>
+          <div class="validation-grid" id="validationGrid"></div>
+          <div class="validation-links">
+            <a class="button" href="docs/gemini-flash-validation-log.md" target="_blank" rel="noopener">検証ログを開く</a>
+            <a class="button" href="docs/gemini-flash-validation-raw-results.json" target="_blank" rel="noopener">raw JSONを開く</a>
+          </div>
+        </div>
       </section>
 
       <section class="band flow-band" id="flow" aria-labelledby="flowTitle">
@@ -195,6 +217,7 @@
           <h3>書き換えポイント</h3>
           <ul id="customizeList"></ul>
         </div>
+        <div class="validation-panel" id="dialogValidation" hidden></div>
         <div class="dialog-actions">
           <button class="button" type="button" id="resetPrompt">元に戻す</button>
           <button class="button" type="button" id="saveDraft">この端末に保存</button>
@@ -207,6 +230,7 @@
 
     <script src="data/prompts.js"></script>
     <script src="data/resources.js"></script>
+    <script src="data/validation-summary.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

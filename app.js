@@ -3,6 +3,7 @@
 
   const prompts = Array.isArray(window.PROMPTS) ? window.PROMPTS : [];
   const resources = Array.isArray(window.RESOURCES) ? window.RESOURCES : [];
+  const validationNotes = window.GEMINI_VALIDATION_NOTES || {};
   const likeKey = "socialStudiesAiPromptLikes.v1";
   const draftKey = "socialStudiesAiPromptDrafts.v1";
 
@@ -23,7 +24,8 @@
     likedOnly: false,
     currentId: null,
     likes: readStore(likeKey),
-    drafts: readStore(draftKey)
+    drafts: readStore(draftKey),
+    validations: {}
   };
 
   const grid = document.getElementById("promptGrid");
@@ -39,6 +41,9 @@
   const customizeList = document.getElementById("customizeList");
   const resourceList = document.getElementById("resourceList");
   const likedToggle = document.getElementById("showLikedOnly");
+  const validationSummary = document.getElementById("validationSummary");
+  const validationGrid = document.getElementById("validationGrid");
+  const dialogValidation = document.getElementById("dialogValidation");
 
   function readStore(key) {
     try {
@@ -64,6 +69,28 @@
 
   function normalize(value) {
     return String(value || "").normalize("NFKC").toLowerCase();
+  }
+
+  function truncate(value, length) {
+    const text = String(value || "").trim();
+    return text.length > length ? `${text.slice(0, length)}...` : text;
+  }
+
+  function getValidation(id) {
+    return state.validations[id] || validationNotes[id] || null;
+  }
+
+  function verdictClass(verdict) {
+    if (verdict === "良好") return "is-good";
+    if (verdict === "軽微修正") return "is-minor";
+    if (verdict === "要修正") return "is-fix";
+    return "is-tested";
+  }
+
+  function validationBadge(validation) {
+    if (!validation) return "";
+    const label = validation.verdict || "検証済み";
+    return `<span class="validation-badge ${verdictClass(label)}">Gemini ${escapeHtml(label)}</span>`;
   }
 
   function showToast(message) {
@@ -150,6 +177,7 @@
     grid.innerHTML = visible.map(function (prompt) {
       const liked = isLiked(prompt.id);
       const edited = Boolean(state.drafts[prompt.id]);
+      const validation = getValidation(prompt.id);
       return `
         <article class="prompt-card ${liked ? "is-liked" : ""}" data-id="${escapeHtml(prompt.id)}">
           <div class="prompt-card-top">
@@ -159,6 +187,12 @@
           <h3>${escapeHtml(prompt.title)}</h3>
           <p class="summary">${escapeHtml(prompt.summary)}</p>
           <p class="benefit"><span>メリット</span>${escapeHtml(prompt.benefit)}</p>
+          ${validation ? `
+            <div class="validation-mini">
+              ${validationBadge(validation)}
+              <p>${escapeHtml(validation.summary || "Gemini Flashで実機検証済みです。")}</p>
+            </div>
+          ` : ""}
           <div class="tag-list">${prompt.tags.map(function (tag) {
             return `<span>${escapeHtml(tag)}</span>`;
           }).join("")}</div>
@@ -187,6 +221,7 @@
   function openEditor(id) {
     const prompt = findPrompt(id);
     if (!prompt) return;
+    const validation = getValidation(id);
     state.currentId = id;
     dialogTitle.textContent = prompt.title;
     dialogMeta.textContent = formatPromptMeta(prompt);
@@ -195,6 +230,7 @@
     customizeList.innerHTML = prompt.customize.map(function (item) {
       return `<li>${escapeHtml(item)}</li>`;
     }).join("");
+    renderDialogValidation(validation);
 
     if (typeof dialog.showModal === "function") {
       dialog.showModal();
@@ -219,6 +255,143 @@
       return `${index + 1}. ${prompt.title}（${formatPromptMeta(prompt)}）`;
     }).join("\n");
     copyText(text, "いいね一覧をコピーしました");
+  }
+
+  function renderDialogValidation(validation) {
+    if (!dialogValidation || !validation) {
+      if (dialogValidation) {
+        dialogValidation.hidden = true;
+        dialogValidation.innerHTML = "";
+      }
+      return;
+    }
+
+    dialogValidation.hidden = false;
+    dialogValidation.innerHTML = `
+      <h3>Gemini検証メモ</h3>
+      <div class="validation-detail-head">
+        ${validationBadge(validation)}
+        ${validation.answerChars ? `<span>${escapeHtml(validation.answerChars)}字</span>` : ""}
+      </div>
+      <dl>
+        <div><dt>出力概要</dt><dd>${escapeHtml(validation.summary || "")}</dd></div>
+        <div><dt>良かった点</dt><dd>${escapeHtml(validation.strength || "")}</dd></div>
+        <div><dt>注意点</dt><dd>${escapeHtml(validation.concern || "")}</dd></div>
+        <div><dt>反映方針</dt><dd>${escapeHtml(validation.revision || "")}</dd></div>
+      </dl>
+      ${validation.answerPreview ? `
+        <details>
+          <summary>Gemini出力プレビュー</summary>
+          <pre>${escapeHtml(truncate(validation.answerPreview, 1200))}</pre>
+        </details>
+      ` : ""}
+    `;
+  }
+
+  function renderValidationSection() {
+    if (!validationSummary || !validationGrid) return;
+
+    const validations = prompts.map(function (prompt) {
+      return {
+        prompt: prompt,
+        validation: getValidation(prompt.id)
+      };
+    }).filter(function (item) {
+      return item.validation;
+    });
+
+    if (!validations.length) {
+      validationSummary.innerHTML = "<p>検証結果を読み込み中です。</p>";
+      validationGrid.innerHTML = "";
+      return;
+    }
+
+    const counts = validations.reduce(function (memo, item) {
+      const verdict = item.validation.verdict || "検証済み";
+      memo[verdict] = (memo[verdict] || 0) + 1;
+      return memo;
+    }, {});
+    const rawCount = validations.filter(function (item) {
+      return item.validation.answerPreview;
+    }).length;
+    const averageChars = Math.round(validations.reduce(function (sum, item) {
+      return sum + (Number(item.validation.answerChars) || 0);
+    }, 0) / Math.max(rawCount, 1));
+
+    validationSummary.innerHTML = `
+      <article>
+        <strong>${validations.length}本</strong>
+        <span>プロンプト検証済み</span>
+      </article>
+      <article>
+        <strong>${counts["良好"] || 0}本</strong>
+        <span>そのまま使いやすい</span>
+      </article>
+      <article>
+        <strong>${(counts["軽微修正"] || 0) + (counts["要修正"] || 0)}本</strong>
+        <span>条件追加が有効</span>
+      </article>
+      <article>
+        <strong>${averageChars.toLocaleString()}字</strong>
+        <span>平均出力量の目安</span>
+      </article>
+    `;
+
+    validationGrid.innerHTML = validations.map(function (item) {
+      const prompt = item.prompt;
+      const validation = item.validation;
+      return `
+        <article class="validation-card">
+          <div class="validation-card-head">
+            ${validationBadge(validation)}
+            <span>${escapeHtml(formatPromptMeta(prompt))}</span>
+          </div>
+          <h3>${escapeHtml(prompt.title)}</h3>
+          <p>${escapeHtml(validation.summary || "")}</p>
+          <dl>
+            <div><dt>良かった点</dt><dd>${escapeHtml(validation.strength || "")}</dd></div>
+            <div><dt>注意点</dt><dd>${escapeHtml(validation.concern || "")}</dd></div>
+            <div><dt>反映方針</dt><dd>${escapeHtml(validation.revision || "")}</dd></div>
+          </dl>
+          ${validation.answerPreview ? `
+            <details>
+              <summary>出力プレビューを見る${validation.answerChars ? `（${escapeHtml(validation.answerChars)}字）` : ""}</summary>
+              <pre>${escapeHtml(truncate(validation.answerPreview, 900))}</pre>
+            </details>
+          ` : ""}
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function loadValidationResults() {
+    Object.keys(validationNotes).forEach(function (id) {
+      state.validations[id] = validationNotes[id];
+    });
+    renderPrompts();
+    renderValidationSection();
+
+    try {
+      const response = await fetch("docs/gemini-flash-validation-raw-results.json", { cache: "no-store" });
+      if (!response.ok) throw new Error("validation fetch failed");
+      const raw = await response.json();
+      if (!Array.isArray(raw)) return;
+
+      raw.forEach(function (item) {
+        if (!item || !item.id) return;
+        state.validations[item.id] = Object.assign({}, validationNotes[item.id] || {}, {
+          index: item.index,
+          status: item.status,
+          answerChars: item.answerChars,
+          answerPreview: item.answerPreview
+        });
+      });
+      renderPrompts();
+      renderValidationSection();
+    } catch (error) {
+      renderPrompts();
+      renderValidationSection();
+    }
   }
 
   filters.addEventListener("click", function (event) {
@@ -312,4 +485,6 @@
 
   renderResources();
   renderPrompts();
+  renderValidationSection();
+  loadValidationResults();
 })();

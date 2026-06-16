@@ -429,6 +429,52 @@ h1 {
   font-weight: 900;
 }
 
+.validation-mini {
+  margin: 0 0 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfc;
+}
+
+.validation-mini p {
+  margin: 7px 0 0;
+  color: var(--ink-soft);
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.validation-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: .72rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.validation-badge.is-good {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.validation-badge.is-minor {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.validation-badge.is-fix {
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.validation-badge.is-tested {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -500,6 +546,10 @@ h1 {
   background: var(--surface-soft);
 }
 
+.validation-band {
+  background: #fff;
+}
+
 .section-inner {
   max-width: var(--max);
   margin: 0 auto;
@@ -550,6 +600,140 @@ h1 {
   margin: 0;
   color: var(--ink-soft);
   font-size: .9rem;
+}
+
+.validation-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.validation-summary article,
+.validation-summary p {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.validation-summary strong {
+  display: block;
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+.validation-summary span {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: .86rem;
+  font-weight: 800;
+}
+
+.validation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.validation-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfc;
+}
+
+.validation-card-head,
+.validation-detail-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.validation-card-head span:not(.validation-badge),
+.validation-detail-head span:not(.validation-badge) {
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.validation-card h3 {
+  margin: 10px 0 8px;
+  font-size: 1.08rem;
+  line-height: 1.4;
+}
+
+.validation-card p {
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-size: .92rem;
+}
+
+.validation-card dl,
+.validation-panel dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.validation-card dl div,
+.validation-panel dl div {
+  min-width: 0;
+}
+
+.validation-card dt,
+.validation-panel dt {
+  color: var(--teal);
+  font-size: .74rem;
+  font-weight: 900;
+}
+
+.validation-card dd,
+.validation-panel dd {
+  margin: 2px 0 0;
+  color: var(--ink-soft);
+  font-size: .88rem;
+}
+
+.validation-card details,
+.validation-panel details {
+  margin-top: 12px;
+}
+
+.validation-card summary,
+.validation-panel summary {
+  cursor: pointer;
+  color: var(--teal);
+  font-size: .86rem;
+  font-weight: 900;
+}
+
+.validation-card pre,
+.validation-panel pre {
+  max-height: 260px;
+  overflow: auto;
+  margin: 10px 0 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+  font-size: .84rem;
+  line-height: 1.65;
+}
+
+.validation-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .link-list {
@@ -827,6 +1011,18 @@ h1 {
   font-weight: 700;
 }
 
+.validation-panel {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfc;
+}
+
+.validation-panel h3 {
+  margin: 0 0 8px;
+  font-size: .95rem;
+}
+
 .dialog-actions {
   display: flex;
   flex-wrap: wrap;
@@ -863,6 +1059,11 @@ h1 {
   }
 
   .axis-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .validation-summary,
+  .validation-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -920,7 +1121,9 @@ h1 {
 
   .prompt-grid,
   .axis-grid,
-  .resource-strip {
+  .resource-strip,
+  .validation-summary,
+  .validation-grid {
     grid-template-columns: 1fr;
   }
 
